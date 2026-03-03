@@ -1,0 +1,149 @@
+1) Proyección de un aumento del 10% a los que ganan comisión y salario < 7000
+SELECT 
+  first_name || ' ' || last_name AS nombre,
+  salary AS salario_actual,
+  ROUND((salary + NVL(salary * commission_pct, 0)) * 1.10, 2) AS salario_comp_con_aumento
+FROM hr.employees
+WHERE commission_pct IS NOT NULL
+  AND salary < 7000;
+
+2) Nombre y suma (salario + comisión) para empleados contratados en marzo 2008 y salario < 7000
+SELECT 
+  first_name || ' ' || last_name AS nombre,
+  salary + NVL(salary * commission_pct, 0) AS salario_mas_comision
+FROM hr.employees
+WHERE TO_CHAR(hire_date, 'MM-YYYY') = '03-2008'
+  AND salary < 7000;
+
+3) "¿Quién soy?" — contratado después de mayo 2007 pero antes de junio 2008, salario < 8000 y apellido que contiene "en"
+SELECT employee_id, first_name, last_name, hire_date, salary
+FROM hr.employees
+WHERE hire_date > DATE '2007-05-31'
+  AND hire_date < DATE '2008-06-01'
+  AND salary < 8000
+  AND LOWER(last_name) LIKE '%en%';
+
+4) ¿Cuál es mi dirección de correo electrónico? (contratado desde inicio de 2004, gana > 9000 y NO recibe comisión)
+SELECT employee_id, first_name || ' ' || last_name AS nombre, email
+FROM hr.employees
+WHERE hire_date >= DATE '2004-01-01'
+  AND salary > 9000
+  AND commission_pct IS NULL;
+
+5) ¿Qué longitud tiene su nombre?
+
+SELECT employee_id, first_name, LENGTH(first_name) AS longitud_nombre
+FROM hr.employees;
+
+6) A partir de la cadena "Oracle Internet Academy", producir Oracle$$$Internet$$$Academy
+SELECT REPLACE('Oracle Internet Academy', ' ', '$$$') AS resultado
+FROM DUAL;
+
+7) last_name y salary para employee_id entre 100 y 102; tercera columna: salary/1.55 redondeado a 2 decimales
+SELECT last_name, salary, ROUND(salary / 1.55, 2) AS salario_dividido 
+FROM hr.employees WHERE employee_id BETWEEN 100 AND 102;
+
+8) Usar DUAL para procesar números
+SELECT 
+  ROUND(845.553, 1)   AS a_redondear_1_decimal,
+  ROUND(30695.348, 2) AS b_redondear_2_decimales,
+  ROUND(30695.348, -2) AS c_redondear_menos_2_decimales,
+  TRUNC(2.3454, 3)     AS d_truncado_a_3_decimales
+FROM DUAL;
+
+
+9) Mostrar los días entre el 1 de enero y el 31 de diciembre (año actual)
+SELECT (TRUNC(TO_DATE('01-JAN-' || TO_CHAR(SYSDATE,'YYYY'),'DD-MON-YYYY')) + LEVEL - 1) AS dia
+FROM DUAL
+CONNECT BY LEVEL <= (TO_DATE('31-DEC-' || TO_CHAR(SYSDATE,'YYYY'),'DD-MON-YYYY') 
+                     - TO_DATE('01-JAN-' || TO_CHAR(SYSDATE,'YYYY'),'DD-MON-YYYY') + 1);
+
+
+10) Redondear y truncar la fecha de hoy al mes y al año más cercanos (aliases)
+SELECT 
+  ROUND(SYSDATE, 'MM')   AS fecha_redondeada_mes,
+  ROUND(SYSDATE, 'YYYY') AS fecha_redondeada_año,
+  TRUNC(SYSDATE, 'MM')   AS fecha_truncada_mes,
+  TRUNC(SYSDATE, 'YYYY') AS fecha_truncada_año
+FROM DUAL;
+
+11) Número de años entre tu fecha de nacimiento y hoy (redondeado al año más cercano)
+
+SELECT ROUND(MONTHS_BETWEEN(SYSDATE, TO_DATE('2006-02-11','YYYY-MM-DD')) / 12) AS años_redondeados
+FROM DUAL;
+
+12) Convertir may 3, 04 al formato por defecto 03-MAY-2004
+SELECT TO_CHAR(TO_DATE('may 3, 04', 'MON DD, YY', 'NLS_DATE_LANGUAGE=ENGLISH'), 'DD-MON-YYYY') AS fecha_formateada
+FROM DUAL;
+
+13) Lista con ID, nombre y salario formateado con signo $ y dos decimales
+SELECT employee_id,
+       first_name || ' ' || last_name AS nombre,
+       TO_CHAR(salary, '$999,999.00') AS salario
+FROM hr.employees;
+
+
+Si necesitas adaptarlo para montos grandes, ajusta el formato ($9,999,999.00, etc.).
+
+14) Próxima cita con el dentista en seis meses a partir de hoy
+SELECT SYSDATE AS hoy,
+       ADD_MONTHS(SYSDATE, 6) AS proxima_cita_en_6_meses
+FROM DUAL;
+
+15) Ellen Abel recibió un aumento de $2,000 — mostrar su nombre, sueldo actual y sueldo nuevo (ambos con $ y 2 decimales)
+SELECT first_name, last_name,
+       TO_CHAR(salary, '$999,999.00') AS sueldo_actual,
+       TO_CHAR(salary + 2000, '$999,999.00') AS "Salario nuevo"
+FROM hr.employees
+WHERE first_name = 'Ellen' AND last_name = 'Abel';
+
+16) Informe: nombre y mes de contratación; si el mes es junio mostrar NULL
+SELECT first_name || ' ' || last_name AS nombre,
+       CASE WHEN TO_CHAR(hire_date, 'MM') = '06' THEN NULL
+            ELSE TO_CHAR(hire_date, 'Month', 'NLS_DATE_LANGUAGE=ENGLISH')
+       END AS mes_contratacion
+FROM hr.employees;
+
+
+Puedes quitar la opción NLS_DATE_LANGUAGE si prefieres meses en español según la NLS session.
+
+17) CASE para descodificar department_id y calcular "salario nuevo"
+SELECT department_id,
+       last_name,
+       salary,
+       CASE 
+         WHEN department_id = 10 THEN salary * 1.25
+         WHEN department_id = 90 THEN salary * 1.5
+         WHEN department_id = 100 THEN salary * 1.75
+         ELSE salary
+       END AS salario_nuevo
+FROM hr.employees;
+
+18) Mismo requisito usando DECODE
+SELECT department_id,
+       last_name,
+       salary,
+       DECODE(department_id,
+              10, salary * 1.25,
+              90, salary * 1.5,
+              100, salary * 1.75,
+              salary) AS salario_nuevo
+FROM hr.employees;
+
+19) Nombre, apellido, manager_id y commission_pct para empleados de departamentos 80 y 90; columna Review con la lógica solicitada
+SELECT first_name || ' ' || last_name AS nombre,
+       manager_id,
+       commission_pct,
+       CASE 
+         WHEN manager_id IS NOT NULL THEN TO_CHAR(manager_id)
+         WHEN commission_pct IS NOT NULL THEN TO_CHAR(commission_pct)
+         ELSE '99999'
+       END AS Review
+FROM hr.employees
+WHERE department_id IN (80, 90);
+
+20) Fecha de publicacion
+SELECT 
+  SYSDATE AS hoy,
+  NEXT_DAY(SYSDATE, 'TUESDAY') AS fecha_publicacion
+FROM DUAL;
