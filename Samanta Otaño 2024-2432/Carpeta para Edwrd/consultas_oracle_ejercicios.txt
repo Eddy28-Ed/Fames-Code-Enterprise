@@ -1,0 +1,128 @@
+-- 1.Nombre, apellido, teléfono formateado y fecha ajustada
+SELECT 
+    first_name,
+    last_name,
+    '(' || SUBSTR(phone_number,1,3) || ')-' || SUBSTR(phone_number,4,3) || '-' || SUBSTR(phone_number,7,4) AS telefono,
+    TO_DATE('01-' || TO_CHAR(hire_date, 'MON-YY'), 'DD-MON-RR') AS fecha_entrada
+FROM hr.employees
+WHERE department_id = 100
+  AND LENGTH(phone_number) = 12;
+
+
+-- 2.Ciudades en mayúscula, reemplazo de país y sin letras “o” ni estado nulo
+SELECT 
+    UPPER(city) AS ciudad,
+    DECODE(country_id, 'US', 'EE. UU.', country_id) AS codigo_pais,
+    state_province
+FROM hr.locations
+WHERE city NOT LIKE '%o%' 
+  AND state_province IS NOT NULL;
+
+
+-- 3.Apellidos y salarios que sean múltiplos de 3 (salario / 3)
+SELECT 
+    last_name,
+    salary / 3 AS salario_dividido
+FROM hr.employees
+WHERE MOD(salary, 3) = 0;
+
+
+-- 4.Posición de la “I” en “Oracle Internet Academy"
+SELECT INSTR('Oracle Internet Academy', 'I') AS posicion FROM dual;
+
+
+-- 5.Rellenar cadena con **** entre palabras
+SELECT '****' || REPLACE('Oracle Internet Academy', ' ', '****') || '****' AS cadena FROM dual;
+
+
+-- 6.Longitud de la cadena “Oracle Internet Academy"
+SELECT LENGTH('Oracle Internet Academy') AS longitud FROM dual;
+
+
+-- 7.Apellidos y salarios múltiplos de 5 (salario / 5)
+SELECT 
+    last_name,
+    salary / 5 AS salario_dividido
+FROM hr.employees
+WHERE MOD(salary, 5) = 0;
+
+
+-- 8.Años trabajados (empleados que ya no laboran o cambiaron de puesto)
+SELECT 
+    employee_id,
+    TRUNC((end_date - start_date) / 365, 1) AS años_trabajados
+FROM HR.job_history
+WHERE end_date IS NOT NULL;
+
+
+-- 9.Datos de empleados según el mes abreviado de contratación
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    TO_CHAR(hire_date, 'MON', 'NLS_DATE_LANGUAGE=ENGLISH') AS mes_contratacion
+FROM HR.employees
+WHERE TO_CHAR(hire_date, 'MON', 'NLS_DATE_LANGUAGE=ENGLISH') = 'JAN';
+
+
+
+
+
+-- 10.Apellido, salario y salario dividido entre 1.55
+SELECT 
+    last_name,
+    salary,
+    ROUND(salary / 1.55, 2) AS salario_dividido
+FROM hr.employees
+WHERE employee_id BETWEEN 100 AND 102;
+
+
+-- 11.Nombre, apellido, jefe, comisión y columna “Review"
+SELECT 
+    first_name,
+    last_name,
+    manager_id,
+    commission_pct,
+    NVL2(manager_id, manager_id, NVL(commission_pct, 99999)) AS Review
+FROM hr.employees
+WHERE department_id IN (80, 90);
+
+-- 12.️Valli Pataballa con aumento de $3,000
+SELECT 
+    first_name,
+    last_name,
+    TO_CHAR(salary, '$999,999.00') AS salario_actual,
+    TO_CHAR(salary + 3000, '$999,999.00') AS "Salario Nuevo"
+FROM hr.employees
+WHERE first_name = 'Valli' AND last_name = 'Pataballa';
+
+
+-- 13.Nombre, apellido y mes de contratación
+SELECT 
+    first_name,
+    last_name,
+    TO_CHAR(hire_date, 'Month') AS mes_contratacion
+FROM hr.employees;
+
+
+-- 14.Mostrar nulo si el mes de contratación es enero
+SELECT 
+    first_name,
+    last_name,
+    DECODE(TO_CHAR(hire_date, 'MON'), 'JAN', NULL, TO_CHAR(hire_date, 'Month')) AS mes_contratacion
+FROM hr.employees;
+
+
+-- 15.Informe con grado según el puesto (usando DECODE)
+SELECT 
+    first_name,
+    last_name,
+    job_id,
+    DECODE(job_id,
+           'AD_PRES', 'A',
+           'ST_MAN',  'B',
+           'SAP_REP', 'C',
+           'ST_CLERK','D',
+           'IT_PROG', 'E',
+           '0') AS grado
+FROM hr.employees;

@@ -1,0 +1,213 @@
+1. 
+SELECT table_name
+FROM all_tables
+WHERE owner = 'HR'
+  AND table_name LIKE 'JO%'
+ORDER BY table_name;
+
+2.
+SELECT SUBSTR(first_name,1,1) || ' ' || last_name AS nombre
+FROM hr.employees;
+
+3.
+SELECT first_name || ' ' || last_name || ' ' || email AS info
+FROM hr.employees
+WHERE email LIKE '%IN%';
+
+4.
+SELECT MIN(last_name) AS menor_apellido,
+       MAX(last_name) AS mayor_apellido
+FROM hr.employees;
+
+5.
+SELECT TO_CHAR(salary / 4, '$9999.99') AS weekly_salary
+FROM hr.employees
+WHERE salary/4 BETWEEN 700 AND 3000;
+
+6.
+SELECT e.first_name, e.last_name, j.job_title
+FROM hr.employees e
+JOIN hr.jobs j ON e.job_id = j.job_id
+ORDER BY j.job_title;
+
+7.
+SELECT j.job_title,
+       j.min_salary || ' - ' || j.max_salary AS rango,
+       e.salary
+FROM hr.employees e
+JOIN hr.jobs j ON e.job_id = j.job_id;
+
+8.
+SELECT SUBSTR(e.first_name,1,1) || ' ' || e.last_name AS inicial_apellido,
+       d.department_name
+FROM hr.employees e
+JOIN hr.departments d
+  ON (e.department_id = d.department_id
+      OR e.employee_id = d.manager_id);
+
+
+
+9.
+SELECT SUBSTR(e.first_name,1,1) AS inicial,
+       e.last_name,
+       d.department_name
+FROM hr.employees e
+JOIN hr.departments d USING (department_id);
+
+10.
+SELECT last_name,
+       DECODE(manager_id, NULL, 'nobody', 'somebody') AS jefe
+FROM hr.employees;
+
+11.
+SELECT SUBSTR(first_name,1,1) || ' ' || last_name AS employee_name,
+       salary AS salary,
+       DECODE(commission_pct, NULL, 'No', 'Yes') AS commission
+FROM hr.employees;
+
+12.
+SELECT e.last_name,
+       d.department_name,
+       l.city,
+       l.state_province
+FROM hr.departments d
+LEFT JOIN hr.employees e ON e.department_id = d.department_id
+LEFT JOIN hr.locations l ON l.location_id = d.location_id;
+
+
+13.
+SELECT first_name,
+       last_name,
+       COALESCE(commission_pct, manager_id, -1) AS resultado
+FROM hr.employees;
+
+
+14.
+SELECT e.last_name,
+       e.salary,
+       CASE
+           WHEN e.salary BETWEEN 2000 AND 5000 THEN 'A'
+           WHEN e.salary BETWEEN 5001 AND 10000 THEN 'B'
+           WHEN e.salary BETWEEN 10001 AND 15000 THEN 'C'
+           WHEN e.salary > 15000 THEN 'D'
+           ELSE 'N/A'
+       END AS job_grade
+FROM hr.employees e
+WHERE e.department_id > 50;
+
+15.
+SELECT e.last_name,
+       d.department_name
+FROM hr.employees e
+FULL OUTER JOIN hr.departments d
+     ON e.department_id = d.department_id;
+
+16.
+SELECT last_name,
+       CONNECT_BY_ROOT last_name AS jefe,
+       LEVEL AS posicion
+FROM hr.employees
+START WITH employee_id = 100
+CONNECT BY PRIOR employee_id = manager_id;
+
+17.
+SELECT MIN(hire_date) AS lowest,
+       MAX(hire_date) AS highest,
+       COUNT(*) AS no_of_employees
+FROM hr.employees;
+
+
+18.
+SELECT d.department_name,
+       SUM(e.salary) AS costo
+FROM hr.employees e
+JOIN hr.departments d ON e.department_id = d.department_id
+GROUP BY d.department_name
+HAVING SUM(e.salary) BETWEEN 15000 AND 31000
+ORDER BY costo;
+
+
+19.
+SELECT d.department_name,
+       d.manager_id,
+       m.last_name AS manager_name,
+       AVG(e.salary) AS avg_salary
+FROM hr.departments d
+LEFT JOIN hr.employees m ON d.manager_id = m.employee_id
+LEFT JOIN hr.employees e ON e.department_id = d.department_id
+GROUP BY d.department_name, d.manager_id, m.last_name;
+
+
+20.
+SELECT ROUND(MAX(avg_salary)) AS mayor_promedio
+FROM (SELECT department_id, AVG(salary) AS avg_salary
+      FROM hr.employees
+      GROUP BY department_id);
+
+21.
+SELECT d.department_name,
+       SUM(e.salary) AS monthly_cost
+FROM hr.employees e
+JOIN hr.departments d ON e.department_id = d.department_id
+GROUP BY d.department_name;
+
+
+22.
+SELECT d.department_name,
+       e.job_id,
+       SUM(e.salary) AS costo
+FROM hr.employees e
+JOIN hr.departments d ON e.department_id = d.department_id
+GROUP BY GROUPING SETS (
+    (d.department_name, e.job_id),
+    (d.department_name),
+    (e.job_id),
+    ()
+);
+
+23.
+SELECT d.department_name,
+       e.job_id,
+       SUM(e.salary) AS costo,
+       GROUPING(d.department_name) AS g_dept,
+       GROUPING(e.job_id) AS g_job
+FROM hr.employees e
+JOIN hr.departments d ON e.department_id = d.department_id
+GROUP BY CUBE (d.department_name, e.job_id);
+
+24.
+SELECT d.department_name,
+       e.job_id,
+       l.city,
+       SUM(e.salary) AS costo
+FROM hr.employees e
+JOIN hr.departments d ON e.department_id = d.department_id
+JOIN hr.locations l ON d.location_id = l.location_id
+GROUP BY GROUPING SETS (
+    (d.department_name, e.job_id),
+    (l.city)
+);
+
+
+25.
+SELECT first_name || ' ' || last_name AS nombre, department_id, NULL AS info
+FROM hr.employees
+UNION
+SELECT NULL, department_id, department_name
+FROM hr.departments
+UNION
+SELECT NULL, NULL, city
+FROM hr.locations;
+
+
+26.
+SELECT SUBSTR(e.first_name,1,1) || ' ' || e.last_name AS nombre,
+       e.salary,
+       d.department_name
+FROM hr.employees e
+JOIN hr.departments d ON e.department_id = d.department_id
+WHERE e.salary > (
+    SELECT AVG(salary)
+    FROM hr.employees
+    WHERE department_id = e.department_id
+);
