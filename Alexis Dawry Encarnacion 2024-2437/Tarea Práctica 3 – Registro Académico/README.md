@@ -1,4 +1,5 @@
-**Registro Académico** Aplicación de escritorio desarrollada en Java utilizando Swing, que permite registrar datos de un estudiante y calcular su nota final de manera automática. 
+**Registro Académico** 
+Aplicación de escritorio desarrollada en Java utilizando Swing, que permite registrar datos de un estudiante y calcular su nota final de manera automática. 
 
 **Vista de la Aplicación **
 
@@ -76,13 +77,15 @@ o Examen Final: 0 – 20
 
 
 
-**Instrucciones de Ejecución** 1. Abrir el proyecto en NetBeans 2. Ejecutar RegistroAcademicoGUI.java 3. Ingresar los datos en la interfaz 4. Presionar **"Calcular Resultados" ** 
+**Instrucciones de Ejecución** 
+1. Abrir el proyecto en NetBeans
+2. Ejecutar RegistroAcademicoGUI.java
+3. Ingresar los datos en la interfaz
+4. Presionar **"Calcular Resultados"
+5. Visualizar el resultado automáticamente
 
-5. Visualizar el resultado automáticamente **Evidencias del Proyecto** El proyecto incluye capturas de: Interfaz con datos ingresados Resultado **APROBADO** 
 
-Resultado **REPROBADO** 
-
-Mensaje de error por datos inválidos **Autor **
+**Autor**
 
 • Nombre: Alexis Encarnación 
 
