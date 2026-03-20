@@ -23,7 +23,8 @@ Captura de datos personales Registro de calificaciones Cálculo automático de l
 
 
 
-**Estructura de Calificación** **Componente Máximo **
+**Estructura de Calificación** 
+**Componente Máximo **
 
 Prácticas 
 
@@ -64,9 +65,6 @@ o Examen Final: 0 – 20
 • Programación Orientada a Objetos \(POO\) 
 
 
-
-
-
 **Estructura del Proyecto** src/ 
 
 ├── RegistroAcademicoGUI.java 
@@ -74,7 +72,6 @@ o Examen Final: 0 – 20
 ├── Estudiante.java 
 
 └── MainPrueba.java 
-
 
 
 **Instrucciones de Ejecución** 
