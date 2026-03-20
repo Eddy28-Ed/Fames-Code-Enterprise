@@ -27,7 +27,7 @@ Prácticas	40
 Parciales	20
 Asignaciones	20
 Examen Final	20
- Total máximo: 100 puntos
+Total máximo: 100 puntos
 
 Validaciones Implementadas
 •	Campos obligatorios
