@@ -7,7 +7,6 @@ La interfaz permite ingresar datos personales del estudiante y sus calificacione
 mostrando automáticamente el resultado final.
 
 Objetivo
-
 Desarrollar una aplicación que calcule la nota final de un estudiante y determine si
 aprueba o reprueba una asignatura.
 
